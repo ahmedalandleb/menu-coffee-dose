@@ -14,6 +14,7 @@
     if (location.hash) history.replaceState(null, '', location.pathname + location.search);
   } catch (_) {}
 </script>
+<link rel="preload" as="image" href="/assets/images/coffee-dose-logo-transparent.png" fetchpriority="high">
 <link rel="stylesheet" href="./src/styles.css">
 </head>
 <body>
@@ -166,7 +167,7 @@
 </section>
 </div>
 
-<footer class="footer"><div class="footer-orbit" aria-hidden="true"></div><img class="dose-logo dose-logo-footer" src="/assets/images/coffee-dose-logo-transparent.png" alt="Coffee Dose" width="320" height="230"><p>جرعة قهوة… لكل لحظة · Your Coffee, Your Dose</p><p><a href="https://maps.app.goo.gl/LKWUQYcY7sU8rfSv6" target="_blank" rel="noopener" style="color:#f0cd93;text-decoration:none">سوهاج، خلف مدرسة الباحثة البادية ↗</a> · <a href="tel:01041614422" style="color:#f0cd93;text-decoration:none">01041614422</a></p><div class="footer-rule"></div><p class="developer-credit"><span>تم التطوير بواسطة</span> <strong>Ahmed Alandleb</strong></p></footer>
+<footer class="footer"><div class="footer-orbit" aria-hidden="true"></div><img class="dose-logo dose-logo-footer" src="/assets/images/coffee-dose-logo-transparent.png" alt="Coffee Dose" width="320" height="230"><p>جرعة قهوة… لكل لحظة · Your Coffee, Your Dose</p><p><a href="https://maps.app.goo.gl/LKWUQYcY7sU8rfSv6" target="_blank" rel="noopener" style="color:#f0cd93;text-decoration:none">سوهاج، خلف مدرسة الباحثة البادية ↗</a> · <a href="tel:01041614422" style="color:#f0cd93;text-decoration:none">01041614422</a></p><div class="footer-rule"></div><p class="developer-credit"><span>تم التطوير بواسطة</span> <strong>Ahmed Alandleb</strong><span aria-hidden="true"> · </span><a href="tel:01024999470" aria-label="اتصل بالمطور على 01024999470">01024999470</a></p></footer>
 <button class="topbtn" id="top" aria-label="للأعلى">↑</button>
 
 <div class="modal" id="modal"><div class="sheet" id="sheet"><div class="handle"></div>
@@ -185,61 +186,14 @@
 
 
 <script>
-  // Always enter the site at the main hero, never at a previously visited section.
+  // Start from the homepage without repeated delayed scroll jumps.
   (() => {
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     try {
       if (location.hash) history.replaceState(null, '', location.pathname + location.search);
     } catch (_) {}
     const goHome = () => window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    window.addEventListener('pageshow', () => {
-      goHome();
-      requestAnimationFrame(goHome);
-      setTimeout(goHome, 120);
-      setTimeout(goHome, 450);
-    });
-    document.addEventListener('DOMContentLoaded', goHome, { once: true });
-  })();
-</script>
-<script>
-  // Premium intro: large logo first; scroll / swipe / keyboard reveals the full hero.
-  (() => {
-    const hero = document.querySelector('.hero');
-    if (!hero) return;
-    let revealed = false;
-    let startX = 0;
-    let startY = 0;
-    let wheelTotal = 0;
-    const reveal = () => {
-      if (revealed) return;
-      revealed = true;
-      hero.classList.add('hero-revealed');
-      hero.setAttribute('data-intro-complete', 'true');
-    };
-    hero.addEventListener('touchstart', (event) => {
-      const t = event.changedTouches[0]; startX = t.clientX; startY = t.clientY;
-    }, { passive: true });
-    hero.addEventListener('touchend', (event) => {
-      const t = event.changedTouches[0];
-      const dy = startY - t.clientY;
-      const dx = Math.abs(startX - t.clientX);
-      if (dy > 24 && dy > dx * 1.05) reveal();
-    }, { passive: true });
-    hero.addEventListener('wheel', (event) => {
-      if (event.deltaY > 0) {
-        wheelTotal += event.deltaY;
-        if (wheelTotal > 24) reveal();
-      }
-    }, { passive: true });
-    hero.addEventListener('pointerdown', (event) => {
-      if (event.pointerType === 'mouse') startY = event.clientY;
-    }, { passive: true });
-    hero.addEventListener('pointerup', (event) => {
-      if (event.pointerType === 'mouse' && startY - event.clientY > 24) reveal();
-    }, { passive: true });
-    window.addEventListener('keydown', (event) => {
-      if (['ArrowDown', 'PageDown', ' '].includes(event.key) && !revealed && window.scrollY < 8) reveal();
-    });
+    window.addEventListener('pageshow', () => requestAnimationFrame(goHome), { once: true });
   })();
 </script>
 <script type="module" src="./src/main.js"></script>

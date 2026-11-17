@@ -554,6 +554,8 @@ html{scroll-behavior:smooth}
 .footer .developer-credit{margin:0;font-size:12px!important;color:#e8c392!important}
 .developer-credit span{color:rgba(255,240,218,.58);margin-left:5px}
 .developer-credit strong{font-weight:900;letter-spacing:.02em;color:#f1d4a8}
+.developer-credit a{color:#f1d4a8;font-weight:800;letter-spacing:.02em;text-decoration:none;white-space:nowrap}
+.developer-credit a:hover{text-decoration:underline;text-underline-offset:3px}
 .topbtn{box-shadow:0 10px 28px rgba(35,17,7,.2)!important;transition:transform .25s,opacity .25s,box-shadow .25s!important}
 .topbtn:hover{transform:translateY(-4px)!important;box-shadow:0 14px 32px rgba(35,17,7,.28)!important}
 :focus-visible{outline:2px solid #c98a43!important;outline-offset:3px}
@@ -1720,3 +1722,221 @@ body::before {
     transform: none !important;
   }
 }
+
+/* Mobile intro invitation + gentle logo pulse */
+@media (max-width:760px){
+ .hero.mobile-dose-intro:not(.hero-revealed) .hero-logo{animation: doseLogoPulse 2.2s ease-in-out infinite!important}
+ .mobile-intro-hint{display:block;appearance:none;border:0;background:transparent;padding:0;opacity:0;max-height:0;overflow:hidden;text-align:center;color:#f7e8d4;font:700 15px/1.5 Cairo,sans-serif;letter-spacing:.1px;transition:opacity .35s ease, max-height .35s ease, margin .35s ease;margin:0 auto;cursor:pointer;position:relative;z-index:5;touch-action:manipulation}
+ .hero.mobile-dose-intro:not(.hero-revealed) .mobile-intro-hint{opacity:1;max-height:64px;margin:14px auto 0}
+ .mobile-intro-hint span{display:inline-block;margin-inline-start:7px;animation:introArrow 1.2s ease-in-out infinite}
+ .hero.mobile-dose-intro.hero-revealed .mobile-intro-hint{display:none}.mobile-intro-hint[hidden]{display:none!important}
+}
+@keyframes doseLogoPulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(226,174,105,0))}50%{transform:scale(1.035);filter:drop-shadow(0 0 18px rgba(226,174,105,.35))}}
+@keyframes introArrow{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+@media(prefers-reduced-motion:reduce){.hero.mobile-dose-intro:not(.hero-revealed) .hero-logo{animation:none!important}.mobile-intro-hint span{animation:none!important}}
+
+
+/* =====================================================================
+   COFFEE DOSE — scroll-performance pass
+   Preserve visual identity while removing expensive scroll-time effects.
+   ===================================================================== */
+.page-scroll-progress > span {
+  width: 100% !important;
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform;
+  transition: none !important;
+}
+.nav .prog i {
+  width: 100% !important;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: none !important;
+}
+.site-nav-wrap,
+.menu-experience > .nav {
+  will-change: auto !important;
+}
+
+/* Keep persistent UI layers simple on every device; opacity replaces live backdrop blur. */
+.site-nav-wrap,
+.menu-experience > .nav,
+.nav,
+.card,
+.search,
+.topbtn,
+.tour-arrow {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.site-nav-wrap { background: rgba(29, 15, 7, .98) !important; }
+.menu-experience > .nav,
+.nav { background: rgba(34, 19, 11, .99) !important; }
+.card {
+  background: linear-gradient(145deg, rgba(255, 249, 238, .98), rgba(234, 209, 174, .96)) !important;
+}
+
+/* No fixed-attachment textures inside long sections: these commonly repaint on scroll. */
+body,
+.menu-experience,
+.visit-section,
+.site-content > section,
+#menu-section,
+#about,
+#gallery,
+#services,
+#offers,
+#reviews,
+#contact,
+#booking {
+  background-attachment: scroll !important;
+}
+
+/* The full-screen texture remains a single, static layer behind the content. */
+body::before {
+  background-attachment: scroll !important;
+  filter: none !important;
+  will-change: auto !important;
+}
+
+/* Keep the gallery elegant without a full-size blurred copy of its active photo. */
+.tour-stage::before {
+  background-image: none !important;
+  background: linear-gradient(135deg, rgba(43, 25, 14, .98), rgba(17, 10, 6, .98)) !important;
+  filter: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+.tour-stage > img {
+  filter: none !important;
+  will-change: auto !important;
+}
+
+@media (hover: none), (pointer: coarse), (max-width: 760px) {
+  /* Blur behind sticky UI and dozens of menu cards is a major mobile repaint cost. */
+  .site-nav-wrap,
+  .menu-experience > .nav,
+  .nav,
+  .card,
+  .search,
+  .topbtn,
+  .tour-arrow,
+  .modal {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    will-change: auto !important;
+  }
+
+  .site-nav-wrap {
+    background: rgba(29, 15, 7, .98) !important;
+  }
+  .menu-experience > .nav,
+  .nav {
+    background: rgba(34, 19, 11, .99) !important;
+  }
+  .card {
+    background: linear-gradient(145deg, rgba(255, 249, 238, .98), rgba(234, 209, 174, .96)) !important;
+    box-shadow: 0 5px 14px rgba(44, 25, 12, .10) !important;
+  }
+  .card::before,
+  .card:hover::before {
+    display: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  /* Static hero background on touch devices; the logo is the only intro motion. */
+  .hero-bg {
+    animation: none !important;
+    transform: scale(1.04) !important;
+    filter: none !important;
+    will-change: auto !important;
+  }
+  .hero:not(.hero-revealed) .hero-bg,
+  .hero.hero-revealed .hero-bg {
+    animation: none !important;
+    transition: none !important;
+    transform: scale(1.04) !important;
+  }
+  .hero .bean,
+  .hero .scroll i {
+    animation: none !important;
+  }
+
+  /* Use opacity only for scroll reveals: no repeated transform/blur compositing. */
+  .reveal-on-scroll {
+    transform: none !important;
+    transition: opacity .24s ease-out !important;
+    will-change: auto !important;
+  }
+  .reveal-on-scroll.is-visible {
+    transform: none !important;
+  }
+
+  .tour-stage::before {
+    background: #1b1009 !important;
+  }
+  .tour-stage > img {
+    transition: opacity .18s ease-out !important;
+    transform: none !important;
+  }
+  .tour-stage.changing > img {
+    transform: none !important;
+  }
+}
+
+/* A lightweight logo pulse: transform-only, without repeatedly recalculating drop-shadows. */
+@media (max-width: 760px) {
+  .hero.mobile-dose-intro:not(.hero-revealed) .hero-inner {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0 !important;
+  }
+  .hero.mobile-dose-intro:not(.hero-revealed) .mobile-intro-hint {
+    display: block !important;
+    flex: 0 0 auto !important;
+    width: max-content !important;
+    max-width: calc(100vw - 36px) !important;
+    min-height: 0 !important;
+    margin-inline: auto !important;
+    white-space: normal !important;
+  }
+  .hero.mobile-dose-intro:not(.hero-revealed) .hero-logo {
+    animation: doseLogoPulseLite 2.2s ease-in-out infinite !important;
+    transform-origin: center center !important;
+  }
+  .hero.mobile-dose-intro:not(.hero-revealed) .dose-logo-hero {
+    animation: none !important;
+    filter: drop-shadow(0 10px 22px rgba(0, 0, 0, .28)) !important;
+  }
+  .mobile-intro-hint span {
+    animation: introArrowLite 1.5s ease-in-out infinite !important;
+  }
+}
+@keyframes doseLogoPulseLite {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.025); }
+}
+@keyframes introArrowLite {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero.mobile-dose-intro:not(.hero-revealed) .hero-logo,
+  .mobile-intro-hint span {
+    animation: none !important;
+    transition: none !important;
+  }
+  .page-scroll-progress > span,
+  .nav .prog i {
+    transition: none !important;
+  }
+}
+
+/* Stop loader-only animations once the overlay has faded away. */
+.loader.hide .brand,
+.loader.hide .st,
+.loader.hide .bar i { animation-play-state: paused !important; }

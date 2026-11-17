@@ -7,7 +7,7 @@ function sizes(x){return (x[3]||'').split('|').filter(Boolean)}
 function details(x){return (x[4]||'').split('|').filter(Boolean)}
 function priceHTML(x){let p=priceParts(x),s=sizes(x);if(p.length===2){let labels=s.length===2?s:['L','M'];return `<div class="price-pair">${labels.map((l,i)=>`<div class="p"><span>${l}</span><small>${p[i]}</small></div>`).join('')}</div><span class="currency">جنيه</span>`}return `<div class="single">${p[0]}</div><span class="currency">جنيه</span>`}
 function card(cat,x,i){let ds=details(x),s=sizes(x);return `<article class="card" data-cat="${cat[0]}" data-i="${i}" style="--card-index:${Math.min(i,10)}"><div class="card-main"><div><div class="name">${esc(x[0])}</div><div class="en">${esc(x[1])}</div>${(s.length||ds.length)?`<div class="tags">${[...s,...ds].map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>`:''}</div><div class="prices">${priceHTML(x)}</div></div></article>`}
-function render(q=''){sections.innerHTML='';let count=0;C.forEach(cat=>{let items=cat[3].filter(x=>(cat[1]+' '+x.join(' ')).toLowerCase().includes(q.trim().toLowerCase()));if(!items.length)return;count+=items.length;let sec=document.createElement('section');sec.className='section';sec.id=cat[0];sec.innerHTML=`<div class="category-heading"><div class="category-heading-copy"><span class="category-en">${esc(cat[2])}</span><h2>${esc(cat[1])}</h2><p>اختار صنفك من المنيو</p></div><span class="category-count">${items.length} صنف</span><span class="category-star" aria-hidden="true">✦</span></div><div class="grid">${items.map((x,i)=>card(cat,x,i)).join('')}</div>`;sections.appendChild(sec)});$('empty').style.display=count?'none':'block';document.querySelectorAll('.card').forEach(c=>cardObs.observe(c));document.querySelectorAll('.head').forEach(h=>headObs.observe(h))}
+function render(q=''){cardObs.disconnect();headObs.disconnect();secObs.disconnect();sections.innerHTML='';let count=0;C.forEach(cat=>{let items=cat[3].filter(x=>(cat[1]+' '+x.join(' ')).toLowerCase().includes(q.trim().toLowerCase()));if(!items.length)return;count+=items.length;let sec=document.createElement('section');sec.className='section';sec.id=cat[0];sec.innerHTML=`<div class="category-heading"><div class="category-heading-copy"><span class="category-en">${esc(cat[2])}</span><h2>${esc(cat[1])}</h2><p>اختار صنفك من المنيو</p></div><span class="category-count">${items.length} صنف</span><span class="category-star" aria-hidden="true">✦</span></div><div class="grid">${items.map((x,i)=>card(cat,x,i)).join('')}</div>`;sections.appendChild(sec);secObs.observe(sec)});$('empty').style.display=count?'none':'block';document.querySelectorAll('.card').forEach(c=>cardObs.observe(c));document.querySelectorAll('.head').forEach(h=>headObs.observe(h))}
 const cardObs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show');cardObs.unobserve(e.target)}}),{threshold:.06,rootMargin:'0px 0px -4% 0px'});
 const headObs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');headObs.unobserve(e.target)}}),{threshold:.4});
 
@@ -34,18 +34,28 @@ const navLinks=[...nav.children];
 const secObs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)navLinks.forEach(a=>a.classList.toggle('active',a.hash==='#'+e.target.id))}),{rootMargin:'-30% 0px -55% 0px'});
 new MutationObserver(()=>document.querySelectorAll('.section').forEach(s=>secObs.observe(s))).observe(sections,{childList:true});
 
-addEventListener('scroll',()=>{
-  const menuSection=$('menu-section');
-  const menuProgress=$('prog');
-  if(menuSection && menuProgress){
-    const rect=menuSection.getBoundingClientRect();
-    const progressRange=menuSection.offsetHeight;
-    const progressed=innerHeight-rect.top;
-    const localProgress=progressRange>0?Math.min(1,Math.max(0,progressed/progressRange))*100:0;
-    menuProgress.style.width=localProgress+'%';
+let menuScrollScheduled = false;
+const updateMenuScrollUI = () => {
+  menuScrollScheduled = false;
+  const menuSection = $('menu-section');
+  const menuProgress = $('prog');
+  if (menuSection && menuProgress) {
+    const rect = menuSection.getBoundingClientRect();
+    const progressRange = menuSection.offsetHeight;
+    const progressed = innerHeight - rect.top;
+    const ratio = progressRange > 0 ? Math.min(1, Math.max(0, progressed / progressRange)) : 0;
+    menuProgress.style.transform = `scaleX(${ratio})`;
   }
-  $('top').classList.toggle('on',scrollY>500);
-},{passive:true});
+  $('top').classList.toggle('on', scrollY > 500);
+};
+const scheduleMenuScrollUI = () => {
+  if (menuScrollScheduled) return;
+  menuScrollScheduled = true;
+  requestAnimationFrame(updateMenuScrollUI);
+};
+addEventListener('scroll', scheduleMenuScrollUI, { passive: true });
+addEventListener('resize', scheduleMenuScrollUI, { passive: true });
+scheduleMenuScrollUI();
 $('top').onclick=()=>scrollTo({top:0,behavior:'smooth'});
 
 /* Premium word-by-word hero entrance, RTL-safe for Arabic. */

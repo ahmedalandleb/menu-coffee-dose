@@ -1,10 +1,6 @@
 (()=>{
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  // Give the gallery a soft, blurred ambient version of the active vertical image.
-  const stage = document.querySelector('.tour-stage');
-  const mainImage = document.getElementById('tourMainImage');
-  if (stage && mainImage && mainImage.src) stage.style.setProperty('--active-photo', 'url("' + mainImage.src + '")');
-
+  // Gallery background stays static; avoid duplicating a full-size blurred image.
   // Controlled reveal of sections/cards. Does not hide content when motion is reduced.
   const revealItems = document.querySelectorAll('.story-section,.services-section,.offers-section,#reviews,.gallery-section,.visit-section,.booking-section,.service-card,.offer-card,.review-card,.visit-card,.category-heading');
   if (!reduced && 'IntersectionObserver' in window) {
@@ -63,7 +59,7 @@
     if(!bar){scheduled=false;return;}
     const scrollable=document.documentElement.scrollHeight-window.innerHeight;
     const ratio=scrollable>0?Math.min(1,Math.max(0,window.scrollY/scrollable)):0;
-    bar.style.width=`${ratio*100}%`;
+    bar.style.transform=`scaleX(${ratio})`;
     scheduled=false;
   };
   window.addEventListener('scroll',()=>{if(!scheduled){scheduled=true;requestAnimationFrame(update);}},{passive:true});
